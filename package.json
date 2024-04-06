@@ -30,6 +30,7 @@
     "@nestjs/platform-fastify": "^10.3.4",
     "@nestjs/swagger": "^7.3.0",
     "mongoose": "^8.2.4",
+    "mongoose-paginate-v2": "^1.8.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },

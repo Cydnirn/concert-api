@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CatsModule } from './cats/cats.module';
-import { ConcertService } from './concert/concert.service';
-import { ConcertController } from './concert/concert.controller';
 import { ConcertModule } from './concert/concert.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './configuration';
@@ -23,10 +21,14 @@ import { MongooseModule } from '@nestjs/mongoose';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('DATABASE_URI'),
+        connectionFactory: (connection) => {
+          connection.plugin(require('mongoose-paginate-v2'));
+          return connection;
+        },
       }),
     }),
   ],
-  controllers: [AppController, ConcertController],
-  providers: [AppService, ConcertService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
