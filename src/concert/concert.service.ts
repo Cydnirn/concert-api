@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Concert } from './concert.schema';
 import { Model } from 'mongoose';
-import { CreateConcertDto } from 'src/dto/concert.dto';
+import { CreateConcertDto } from '../dto/concert.dto';
 
 @Injectable()
 export class ConcertService {

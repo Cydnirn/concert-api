@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConcertService } from './concert.service';
-import { CreateConcertDto } from 'src/dto/concert.dto';
-import { error } from 'console';
+import { ConcertDto, CreateConcertDto } from 'src/dto/concert.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('concert')
 export class ConcertController {
@@ -19,8 +19,9 @@ export class ConcertController {
   ) {}
 
   @Get()
-  getConcert() {
-    return this.concertService.find();
+  async getConcert(): Promise<ConcertDto> {
+    const Concerts = this.concertService.find();
+    return plainToInstance(ConcertDto, Concerts);
   }
 
   @Post()
