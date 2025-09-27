@@ -1,6 +1,6 @@
 services:
   app:
-    image: concert-app:development
+    image: concert-api-app:latest
     restart: unless-stopped
     env_file: .env
     environment:
