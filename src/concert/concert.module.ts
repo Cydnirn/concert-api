@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Concert, ConcertSchema } from './concert.schema';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Concert } from './concert.entity';
 import { ConcertController } from './concert.controller';
 import { ConcertService } from './concert.service';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Concert.name, schema: ConcertSchema }]),
-  ],
+  imports: [TypeOrmModule.forFeature([Concert])],
   controllers: [ConcertController],
   providers: [ConcertService],
 })

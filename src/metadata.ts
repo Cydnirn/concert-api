@@ -1,0 +1,7 @@
+/* eslint-disable */
+export default async () => {
+    const t = {
+        ["./dto/concert.dto"]: await import("./dto/concert.dto")
+    };
+    return { "@nestjs/swagger": { "models": [[import("./concert/concert.entity"), { "Concert": { id: { required: true, type: () => Number }, name: { required: true, type: () => String }, details: { required: true, type: () => String }, createdAt: { required: true, type: () => Date }, updatedAt: { required: true, type: () => Date } } }], [import("./dto/concert.dto"), { "CreateConcertDto": { name: { required: true, type: () => String }, details: { required: true, type: () => String } }, "UpdateConcertDto": { name: { required: false, type: () => String }, details: { required: false, type: () => String } }, "ConcertDto": { id: { required: true, type: () => Number }, name: { required: true, type: () => String }, details: { required: true, type: () => String } } }]], "controllers": [[import("./app.controller"), { "AppController": { "getHello": { type: String } } }], [import("./concert/concert.controller"), { "ConcertController": { "getConcert": { type: [t["./dto/concert.dto"].ConcertDto] }, "getConcertById": { type: t["./dto/concert.dto"].ConcertDto }, "postConcert": { type: t["./dto/concert.dto"].ConcertDto }, "putConcert": { type: t["./dto/concert.dto"].ConcertDto }, "deleteConcert": {} } }]] } };
+};

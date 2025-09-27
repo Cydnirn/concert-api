@@ -5,8 +5,8 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import fastifyHelmet from '@fastify/helmet';
+import { setup } from './setup';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -18,15 +18,9 @@ async function bootstrap() {
     contentSecurityPolicy: false,
   });
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Concert API')
-    .setDescription('Concert API Description')
-    .setVersion('1.0')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api', app, document);
+  setup(app);
 
   await app.listen(3000, '0.0.0.0');
 }
+
 bootstrap();
