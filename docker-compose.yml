@@ -1,6 +1,6 @@
 services:
   app:
-    image: concert-api-app:latest
+    image: 284845684968.dkr.ecr.us-east-1.amazonaws.com/cyd/concert-api-app:latest
     restart: unless-stopped
     env_file: .env
     environment:
