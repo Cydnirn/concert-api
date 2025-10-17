@@ -29,6 +29,7 @@ services:
 
 volumes:
   db-data:
+    driver: local
 
 networks:
   app-network:
