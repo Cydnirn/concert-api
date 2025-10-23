@@ -28,6 +28,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
 import { pipeline } from 'stream';
+import { ConfigService } from '@nestjs/config';
 
 const pump = promisify(pipeline);
 
@@ -80,6 +81,8 @@ export class ConcertController {
       let name = '';
       let details = '';
       let filename = '';
+      const configService = new ConfigService();
+      const filePath = configService.get<string>('FILE_DIRECTORY') ?? 'uploads';
 
       // Process multipart data
       const parts = req.parts();
@@ -107,11 +110,11 @@ export class ConcertController {
             .map(() => Math.round(Math.random() * 16).toString(16))
             .join('');
           filename = `${randomName}${ext}`;
-          const uploadPath = path.join('./uploads', filename);
+          const uploadPath = path.join(filePath, filename);
 
           // Ensure uploads directory exists
-          if (!fs.existsSync('./uploads')) {
-            fs.mkdirSync('./uploads', { recursive: true });
+          if (!fs.existsSync(filePath)) {
+            fs.mkdirSync(filePath, { recursive: true });
           }
 
           // Save file
