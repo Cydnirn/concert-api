@@ -78,6 +78,7 @@ DATABASE_PORT=5432
 DATABASE_USER=your_user
 DATABASE_PASSWORD=your_password
 DATABASE_NAME=your_database
+FILE_DIRECTORY=/your/directory
 ```
 
 ## Running the Application
@@ -137,7 +138,7 @@ To verify everything is working correctly:
 2. **Test file upload** - Use any of the testing methods above
 
 3. **Check uploads directory** - After a successful upload, verify that:
-   - The `./uploads` directory contains the uploaded file
+   - The FILE_DIRECTORY from env contains the uploaded file
    - The filename is a random hash with the original extension
    - The database record contains the filename in the `image` column
 
@@ -154,7 +155,7 @@ npm install @fastify/multipart
 
 **Solution**: The uploads directory doesn't exist. Create it:
 ```bash
-mkdir -p uploads
+mkdir -p /your/directory
 ```
 
 ### Issue: "File size limit exceeded"
@@ -180,8 +181,8 @@ app.register(fastifyMultipart, {
 **Solution**: Ensure the `image` column exists in the database:
 ```sql
 -- Check if column exists
-SELECT column_name 
-FROM information_schema.columns 
+SELECT column_name
+FROM information_schema.columns
 WHERE table_name = 'concert' AND column_name = 'image';
 
 -- If not, add it
