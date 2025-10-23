@@ -22,6 +22,7 @@ import {
   ApiExtraModels,
   ApiResponse,
   ApiConsumes,
+  ApiBody,
   getSchemaPath,
 } from '@nestjs/swagger';
 import * as fs from 'fs';
@@ -29,6 +30,7 @@ import * as path from 'path';
 import { promisify } from 'util';
 import { pipeline } from 'stream';
 import { ConfigService } from '@nestjs/config';
+import { ResponseDto } from 'src/dto/response.dto';
 
 const pump = promisify(pipeline);
 
@@ -47,10 +49,14 @@ export class ConcertController {
     },
   })
   @Get()
-  async getConcert(): Promise<ConcertDto[]> {
+  async getConcert(): Promise<ResponseDto<ConcertDto[]>> {
     try {
       const concerts = await this.concertService.find();
-      return plainToInstance(ConcertDto, concerts);
+      return {
+        data: plainToInstance(ConcertDto, concerts),
+        message: 'Concerts retrieved successfully',
+        statusCode: HttpStatus.OK,
+      };
     } catch (err: any) {
       throw new HttpException(
         { status: HttpStatus.BAD_REQUEST, error: err.message },
@@ -60,10 +66,16 @@ export class ConcertController {
   }
 
   @Get(':id')
-  async getConcertById(@Param('id') id: string): Promise<ConcertDto> {
+  async getConcertById(
+    @Param('id') id: string,
+  ): Promise<ResponseDto<ConcertDto>> {
     try {
       const concert = await this.concertService.findOne(id);
-      return plainToInstance(ConcertDto, concert);
+      return {
+        data: plainToInstance(ConcertDto, concert),
+        message: 'Concert retrieved successfully',
+        statusCode: HttpStatus.OK,
+      };
     } catch (err: any) {
       throw new HttpException(
         { status: HttpStatus.BAD_REQUEST, error: err.message },
@@ -74,7 +86,46 @@ export class ConcertController {
 
   @Post()
   @ApiConsumes('multipart/form-data')
-  async postConcert(@Req() req: FastifyRequest): Promise<ConcertDto> {
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'Concert name',
+          example: 'Summer Music Festival',
+        },
+        organizer: {
+          type: 'string',
+          description: 'Concert organizer',
+          example: 'Music Events Inc',
+        },
+        details: {
+          type: 'string',
+          description: 'Concert details',
+          example: 'Annual outdoor music festival',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'Concert image (jpg, jpeg, png, gif)',
+        },
+      },
+      required: ['name', 'organizer', 'details'],
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Concert created successfully',
+    type: ConcertDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid input or file type',
+  })
+  async postConcert(
+    @Req() req: FastifyRequest,
+  ): Promise<ResponseDto<ConcertDto>> {
     try {
       // Check if request is multipart
       if (!req.isMultipart()) {
@@ -147,7 +198,11 @@ export class ConcertController {
         filename || undefined,
       );
 
-      return plainToInstance(ConcertDto, concert);
+      return {
+        data: plainToInstance(ConcertDto, concert),
+        message: 'Concert created successfully',
+        statusCode: HttpStatus.CREATED,
+      };
     } catch (err: any) {
       throw new HttpException(
         {
@@ -179,9 +234,14 @@ export class ConcertController {
   }
 
   @Delete(':id')
-  async deleteConcert(@Param('id') id: number): Promise<void> {
+  async deleteConcert(@Param('id') id: number): Promise<ResponseDto<void>> {
     try {
       await this.concertService.delete(id);
+      return {
+        data: undefined,
+        message: 'Concert deleted successfully',
+        statusCode: HttpStatus.NO_CONTENT,
+      };
     } catch (err: any) {
       throw new HttpException(
         {

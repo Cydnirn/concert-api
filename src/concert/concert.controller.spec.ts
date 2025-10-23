@@ -106,7 +106,7 @@ describe('ConcertController', () => {
 
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBe(2);
+      expect(result.data.length).toBe(2);
       expect(service.find).toHaveBeenCalledTimes(1);
     });
 
@@ -143,8 +143,8 @@ describe('ConcertController', () => {
       const result = await controller.getConcertById(id);
 
       expect(result).toBeDefined();
-      expect(result.id).toBe(mockConcert.id);
-      expect(result.name).toBe(mockConcert.name);
+      expect(result.data.id).toBe(mockConcert.id);
+      expect(result.data.name).toBe(mockConcert.name);
       expect(service.findOne).toHaveBeenCalledWith(id);
       expect(service.findOne).toHaveBeenCalledTimes(1);
     });
