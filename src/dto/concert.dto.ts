@@ -6,6 +6,9 @@ export class CreateConcertDto {
   name: string;
 
   @ApiProperty()
+  organizer: string;
+
+  @ApiProperty()
   details: string;
 
   @ApiProperty({ required: false })
@@ -15,6 +18,9 @@ export class CreateConcertDto {
 export class UpdateConcertDto {
   @ApiProperty({ required: false })
   name?: string;
+
+  @ApiProperty({ required: false })
+  organizer?: string;
 
   @ApiProperty({ required: false })
   details?: string;
@@ -31,6 +37,10 @@ export class ConcertDto {
   @ApiProperty()
   @Expose()
   name: string;
+
+  @ApiProperty()
+  @Expose()
+  organizer: string;
 
   @ApiProperty()
   @Expose()

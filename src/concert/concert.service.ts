@@ -26,7 +26,7 @@ export class ConcertService {
     return this.concertRepository.find();
   }
 
-  async findOne(id: number): Promise<Concert> {
+  async findOne(id: string): Promise<Concert> {
     const concert = await this.concertRepository.findOneBy({ id });
     if (!concert) {
       throw new NotFoundException(`Concert with ID ${id} not found`);
@@ -34,7 +34,7 @@ export class ConcertService {
     return concert;
   }
 
-  async update(id: number, concertDto: UpdateConcertDto): Promise<Concert> {
+  async update(id: string, concertDto: UpdateConcertDto): Promise<Concert> {
     const concert = await this.concertRepository.preload({
       id: id,
       ...concertDto,

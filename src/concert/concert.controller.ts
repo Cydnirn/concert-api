@@ -34,7 +34,10 @@ const pump = promisify(pipeline);
 
 @Controller('concert')
 export class ConcertController {
-  constructor(private concertService: ConcertService) {}
+  constructor(
+    private concertService: ConcertService,
+    private configService: ConfigService,
+  ) {}
 
   @ApiExtraModels(ConcertDto)
   @ApiResponse({
@@ -57,7 +60,7 @@ export class ConcertController {
   }
 
   @Get(':id')
-  async getConcertById(@Param('id') id: number): Promise<ConcertDto> {
+  async getConcertById(@Param('id') id: string): Promise<ConcertDto> {
     try {
       const concert = await this.concertService.findOne(id);
       return plainToInstance(ConcertDto, concert);
@@ -81,8 +84,9 @@ export class ConcertController {
       let name = '';
       let details = '';
       let filename = '';
-      const configService = new ConfigService();
-      const filePath = configService.get<string>('FILE_DIRECTORY') ?? 'uploads';
+      let organizer = '';
+      const filePath =
+        this.configService.get<string>('FILE_DIRECTORY') ?? 'uploads';
 
       // Process multipart data
       const parts = req.parts();
@@ -125,6 +129,8 @@ export class ConcertController {
             name = part.value as string;
           } else if (part.fieldname === 'details') {
             details = part.value as string;
+          } else if (part.fieldname === 'organizer') {
+            organizer = part.value as string;
           }
         }
       }
@@ -133,6 +139,7 @@ export class ConcertController {
       const createConcertDto: CreateConcertDto = {
         name,
         details,
+        organizer,
       };
 
       const concert = await this.concertService.create(
@@ -154,7 +161,7 @@ export class ConcertController {
 
   @Put(':id')
   async putConcert(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateConcertDto: UpdateConcertDto,
   ): Promise<ConcertDto> {
     try {
