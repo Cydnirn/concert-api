@@ -104,8 +104,8 @@ describe('ConcertController', () => {
 
       const result = await controller.getConcert();
 
-      expect(result).toBeDefined();
-      expect(Array.isArray(result)).toBe(true);
+      expect(result.data).toBeDefined();
+      expect(Array.isArray(result.data)).toBe(true);
       expect(result.data.length).toBe(2);
       expect(service.find).toHaveBeenCalledTimes(1);
     });
@@ -115,7 +115,7 @@ describe('ConcertController', () => {
 
       const result = await controller.getConcert();
 
-      expect(result).toEqual([]);
+      expect(result.data).toEqual([]);
       expect(service.find).toHaveBeenCalledTimes(1);
     });
 
@@ -431,8 +431,8 @@ describe('ConcertController', () => {
       const result = await controller.putConcert(id, updateDto);
 
       expect(result).toBeDefined();
-      expect(result.name).toBe(updateDto.name);
-      expect(result.details).toBe(updateDto.details);
+      expect(result.data.name).toBe(updateDto.name);
+      expect(result.data.details).toBe(updateDto.details);
       expect(service.update).toHaveBeenCalledWith(id, updateDto);
       expect(service.update).toHaveBeenCalledTimes(1);
     });
@@ -467,8 +467,8 @@ describe('ConcertController', () => {
 
       const result = await controller.putConcert(id, updateDto);
 
-      expect(result.name).toBe(updateDto.name);
-      expect(result.details).toBe(mockConcert.details);
+      expect(result.data.name).toBe(updateDto.name);
+      expect(result.data.details).toBe(mockConcert.details);
       expect(service.update).toHaveBeenCalledWith(id, updateDto);
     });
   });
@@ -499,7 +499,7 @@ describe('ConcertController', () => {
 
       const result = await controller.deleteConcert(id);
 
-      expect(result).toBeUndefined();
+      expect(result.data).toBeUndefined();
     });
   });
 

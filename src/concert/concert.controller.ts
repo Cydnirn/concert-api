@@ -30,7 +30,7 @@ import * as path from 'path';
 import { promisify } from 'util';
 import { pipeline } from 'stream';
 import { ConfigService } from '@nestjs/config';
-import { ResponseDto } from 'src/dto/response.dto';
+import { ResponseDto } from '../dto/response.dto';
 
 const pump = promisify(pipeline);
 
@@ -52,11 +52,11 @@ export class ConcertController {
   async getConcert(): Promise<ResponseDto<ConcertDto[]>> {
     try {
       const concerts = await this.concertService.find();
-      return {
+      return plainToInstance(ResponseDto<ConcertDto[]>, {
         data: plainToInstance(ConcertDto, concerts),
         message: 'Concerts retrieved successfully',
         statusCode: HttpStatus.OK,
-      };
+      });
     } catch (err: any) {
       throw new HttpException(
         { status: HttpStatus.BAD_REQUEST, error: err.message },
@@ -71,11 +71,11 @@ export class ConcertController {
   ): Promise<ResponseDto<ConcertDto>> {
     try {
       const concert = await this.concertService.findOne(id);
-      return {
+      return plainToInstance(ResponseDto<ConcertDto>, {
         data: plainToInstance(ConcertDto, concert),
         message: 'Concert retrieved successfully',
         statusCode: HttpStatus.OK,
-      };
+      });
     } catch (err: any) {
       throw new HttpException(
         { status: HttpStatus.BAD_REQUEST, error: err.message },
@@ -198,11 +198,11 @@ export class ConcertController {
         filename || undefined,
       );
 
-      return {
+      return plainToInstance(ResponseDto<ConcertDto>, {
         data: plainToInstance(ConcertDto, concert),
         message: 'Concert created successfully',
         statusCode: HttpStatus.CREATED,
-      };
+      });
     } catch (err: any) {
       throw new HttpException(
         {
@@ -218,10 +218,14 @@ export class ConcertController {
   async putConcert(
     @Param('id') id: string,
     @Body() updateConcertDto: UpdateConcertDto,
-  ): Promise<ConcertDto> {
+  ): Promise<ResponseDto<ConcertDto>> {
     try {
       const concert = await this.concertService.update(id, updateConcertDto);
-      return plainToInstance(ConcertDto, concert);
+      return plainToInstance(ResponseDto<ConcertDto>, {
+        data: plainToInstance(ConcertDto, concert),
+        message: 'Concert updated successfully',
+        statusCode: HttpStatus.OK,
+      });
     } catch (err: any) {
       throw new HttpException(
         {
@@ -237,11 +241,11 @@ export class ConcertController {
   async deleteConcert(@Param('id') id: number): Promise<ResponseDto<void>> {
     try {
       await this.concertService.delete(id);
-      return {
+      return plainToInstance(ResponseDto<void>, {
         data: undefined,
         message: 'Concert deleted successfully',
         statusCode: HttpStatus.NO_CONTENT,
-      };
+      });
     } catch (err: any) {
       throw new HttpException(
         {
