@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concert API - File Upload Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        input[type="file"] {
+            padding: 10px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .response {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        .response.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .response.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .response h3 {
+            margin-top: 0;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .loading {
+            display: none;
+            color: #666;
+            margin-top: 10px;
+        }
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Concert API - File Upload Test</h1>
+        <p class="subtitle">Test the multipart/form-data endpoint with image upload</p>
+
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="name">Concert Name *</label>
+                <input type="text" id="name" name="name" required placeholder="e.g., Summer Music Festival">
+            </div>
+
+            <div class="form-group">
+                <label for="details">Concert Details *</label>
+                <textarea id="details" name="details" required placeholder="e.g., Annual outdoor music festival featuring local and international artists"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Concert Image (JPG, JPEG, PNG, GIF - Max 10MB)</label>
+                <input type="file" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif">
+                <div id="fileInfo" class="file-info" style="display: none;"></div>
+            </div>
+
+            <button type="submit" id="submitBtn">Create Concert</button>
+            <div class="loading" id="loading">Uploading... Please wait.</div>
+        </form>
+
+        <div id="response" class="response">
+            <h3 id="responseTitle"></h3>
+            <pre id="responseBody"></pre>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('image');
+        const fileInfo = document.getElementById('fileInfo');
+        const response = document.getElementById('response');
+        const responseTitle = document.getElementById('responseTitle');
+        const responseBody = document.getElementById('responseBody');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+
+        // API endpoint - change this to your actual endpoint
+        const API_ENDPOINT = 'http://localhost:3000/concert';
+
+        // Display file info when selected
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                fileInfo.textContent = `Selected: ${file.name} (${sizeMB} MB)`;
+                fileInfo.style.display = 'block';
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Hide previous response
+            response.style.display = 'none';
+
+            // Show loading state
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+
+            try {
+                // Create FormData
+                const formData = new FormData();
+                formData.append('name', document.getElementById('name').value);
+                formData.append('details', document.getElementById('details').value);
+
+                const imageFile = document.getElementById('image').files[0];
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                }
+
+                // Send request
+                const res = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                // Display response
+                response.style.display = 'block';
+                if (res.ok) {
+                    response.className = 'response success';
+                    responseTitle.textContent = 'Success!';
+                    responseBody.textContent = JSON.stringify(data, null, 2);
+
+                    // Reset form
+                    form.reset();
+                    fileInfo.style.display = 'none';
+                } else {
+                    response.className = 'response error';
+                    responseTitle.textContent = 'Error';
+                    responseBody.textContent = JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                response.style.display = 'block';
+                response.className = 'response error';
+                responseTitle.textContent = 'Error';
+                responseBody.textContent = `Network error: ${error.message}\n\nMake sure the API server is running at ${API_ENDPOINT}`;
+            } finally {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

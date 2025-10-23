@@ -11,6 +11,9 @@ export class Concert {
   @Column()
   details: string;
 
+  @Column({ nullable: true })
+  image: string;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 

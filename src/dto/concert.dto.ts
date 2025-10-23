@@ -7,6 +7,9 @@ export class CreateConcertDto {
 
   @ApiProperty()
   details: string;
+
+  @ApiProperty({ required: false })
+  image?: string;
 }
 
 export class UpdateConcertDto {
@@ -15,6 +18,9 @@ export class UpdateConcertDto {
 
   @ApiProperty({ required: false })
   details?: string;
+
+  @ApiProperty({ required: false })
+  image?: string;
 }
 
 export class ConcertDto {
@@ -29,4 +35,8 @@ export class ConcertDto {
   @ApiProperty()
   @Expose()
   details: string;
+
+  @ApiProperty({ required: false })
+  @Expose()
+  image?: string;
 }

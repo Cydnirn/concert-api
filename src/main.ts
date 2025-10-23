@@ -6,6 +6,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import fastifyHelmet from '@fastify/helmet';
+import fastifyMultipart from '@fastify/multipart';
 import { setup } from './setup';
 
 async function bootstrap() {
@@ -16,6 +17,12 @@ async function bootstrap() {
 
   app.register(fastifyHelmet, {
     contentSecurityPolicy: false,
+  });
+
+  app.register(fastifyMultipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB limit
+    },
   });
 
   setup(app);

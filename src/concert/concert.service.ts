@@ -11,8 +11,14 @@ export class ConcertService {
     private concertRepository: Repository<Concert>,
   ) {}
 
-  async create(concertDto: CreateConcertDto): Promise<Concert> {
-    const concert = this.concertRepository.create(concertDto);
+  async create(
+    concertDto: CreateConcertDto,
+    imageFilename?: string,
+  ): Promise<Concert> {
+    const concert = this.concertRepository.create({
+      ...concertDto,
+      image: imageFilename,
+    });
     return this.concertRepository.save(concert);
   }
 
