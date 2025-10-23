@@ -5,10 +5,12 @@ import { NotFoundException } from '@nestjs/common';
 import { ConcertService } from './concert.service';
 import { Concert } from './concert.entity';
 import { CreateConcertDto, UpdateConcertDto } from '../dto/concert.dto';
+import { ConfigService } from '@nestjs/config';
 
 describe('ConcertService', () => {
   let service: ConcertService;
   let repository: Repository<Concert>;
+  let configService: ConfigService;
 
   // Mock data
   const mockConcert: Concert = {
@@ -43,6 +45,10 @@ describe('ConcertService', () => {
     delete: jest.fn(),
   };
 
+  const mockConfigService = {
+    get: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -51,12 +57,16 @@ describe('ConcertService', () => {
           provide: getRepositoryToken(Concert),
           useValue: mockRepository,
         },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
       ],
     }).compile();
 
     service = module.get<ConcertService>(ConcertService);
     repository = module.get<Repository<Concert>>(getRepositoryToken(Concert));
-
+    configService = module.get<ConfigService>(ConfigService);
     // Clear all mocks before each test
     jest.clearAllMocks();
   });

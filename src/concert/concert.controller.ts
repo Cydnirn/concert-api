@@ -25,21 +25,11 @@ import {
   ApiBody,
   getSchemaPath,
 } from '@nestjs/swagger';
-import * as fs from 'fs';
-import * as path from 'path';
-import { promisify } from 'util';
-import { pipeline } from 'stream';
-import { ConfigService } from '@nestjs/config';
 import { ResponseDto } from '../dto/response.dto';
-
-const pump = promisify(pipeline);
 
 @Controller('concert')
 export class ConcertController {
-  constructor(
-    private concertService: ConcertService,
-    private configService: ConfigService,
-  ) {}
+  constructor(private concertService: ConcertService) {}
 
   @ApiExtraModels(ConcertDto)
   @ApiResponse({
@@ -136,44 +126,17 @@ export class ConcertController {
       let details = '';
       let filename = '';
       let organizer = '';
-      const filePath =
-        this.configService.get<string>('FILE_DIRECTORY') ?? 'uploads';
 
       // Process multipart data
       const parts = req.parts();
 
       for await (const part of parts) {
         if (part.type === 'file') {
-          // Handle file upload
-          const allowedMimeTypes = [
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/gif',
-          ];
-
-          if (!allowedMimeTypes.includes(part.mimetype)) {
-            throw new Error(
-              'Only image files (jpg, jpeg, png, gif) are allowed!',
-            );
-          }
-
-          // Generate unique filename
-          const ext = path.extname(part.filename);
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
-          filename = `${randomName}${ext}`;
-          const uploadPath = path.join(filePath, filename);
-
-          // Ensure uploads directory exists
-          if (!fs.existsSync(filePath)) {
-            fs.mkdirSync(filePath, { recursive: true });
-          }
-
-          // Save file
-          await pump(part.file, fs.createWriteStream(uploadPath));
+          filename = await this.concertService.saveImage({
+            file: part.file,
+            filename: part.filename,
+            mimetype: part.mimetype,
+          });
         } else {
           // Handle form fields
           if (part.fieldname === 'name') {

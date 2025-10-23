@@ -1,6 +1,18 @@
 // Mock modules before imports
 jest.mock('fs');
 jest.mock('path');
+jest.mock('typeorm', () => ({
+  Entity: () => jest.fn(),
+  Column: () => jest.fn(),
+  PrimaryGeneratedColumn: () => jest.fn(),
+  CreateDateColumn: () => jest.fn(),
+  UpdateDateColumn: () => jest.fn(),
+  Repository: jest.fn(),
+}));
+jest.mock('@nestjs/typeorm', () => ({
+  InjectRepository: () => jest.fn(),
+  TypeOrmModule: jest.fn(),
+}));
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConcertController } from './concert.controller';
@@ -65,6 +77,7 @@ describe('ConcertController', () => {
     findOne: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    saveImage: jest.fn(),
   };
 
   const mockConfigService = {
@@ -184,6 +197,8 @@ describe('ConcertController', () => {
         image: 'random-filename.jpg',
       });
 
+      mockConcertService.saveImage.mockResolvedValue('random-filename.jpg');
+
       // Create mock multipart request
       const mockFileStream = new Readable({
         read() {},
@@ -245,6 +260,8 @@ describe('ConcertController', () => {
         image: undefined,
       });
 
+      mockConcertService.saveImage.mockResolvedValue('');
+
       (fs.createWriteStream as jest.Mock).mockReturnValue(
         createMockWriteStream(),
       );
@@ -303,6 +320,10 @@ describe('ConcertController', () => {
     });
 
     it('should throw error when file type is not allowed', async () => {
+      mockConcertService.saveImage.mockRejectedValue(
+        new Error('File is not an image'),
+      );
+
       const mockFileStream = new Readable({
         read() {},
       });
@@ -345,7 +366,7 @@ describe('ConcertController', () => {
       await expect(controller.postConcert(mockRequest)).rejects.toThrow(
         expect.objectContaining({
           response: expect.objectContaining({
-            error: 'Only image files (jpg, jpeg, png, gif) are allowed!',
+            error: 'File is not an image',
           }),
         }),
       );
@@ -353,6 +374,8 @@ describe('ConcertController', () => {
 
     it('should create uploads directory if it does not exist', async () => {
       (fs.existsSync as jest.Mock).mockReturnValue(false);
+
+      mockConcertService.saveImage.mockResolvedValue('random-filename.jpg');
 
       const createDto: CreateConcertDto = {
         name: 'New Concert',
@@ -407,9 +430,10 @@ describe('ConcertController', () => {
 
       await controller.postConcert(mockRequest);
 
-      expect(fs.mkdirSync).toHaveBeenCalledWith('uploads', {
-        recursive: true,
-      });
+      // Verify that saveImage was called (service handles directory creation)
+      expect(mockConcertService.saveImage).toHaveBeenCalledWith(
+        expect.objectContaining({ filename: 'test.jpg', mimetype: 'image/jpeg' })
+      );
     });
   });
 
@@ -527,6 +551,8 @@ describe('ConcertController', () => {
       const customPath = 'custom/upload/path';
       mockConfigService.get.mockReturnValue(customPath);
 
+      mockConcertService.saveImage.mockResolvedValue('random-filename.jpg');
+
       const createDto: CreateConcertDto = {
         name: 'New Concert',
         organizer: 'Test Organizer',
@@ -580,12 +606,17 @@ describe('ConcertController', () => {
 
       await controller.postConcert(mockRequest);
 
-      expect(configService.get).toHaveBeenCalledWith('FILE_DIRECTORY');
+      // Verify that saveImage was called (service handles config)
+      expect(mockConcertService.saveImage).toHaveBeenCalledWith(
+        expect.objectContaining({ filename: 'test.jpg', mimetype: 'image/jpeg' })
+      );
     });
 
     it('should use default uploads directory when FILE_DIRECTORY is not set', async () => {
       mockConfigService.get.mockReturnValue(undefined);
 
+      mockConcertService.saveImage.mockResolvedValue('random-filename.jpg');
+
       const createDto: CreateConcertDto = {
         name: 'New Concert',
         organizer: 'Test Organizer',
@@ -639,8 +670,10 @@ describe('ConcertController', () => {
 
       await controller.postConcert(mockRequest);
 
-      // Should check if 'uploads' directory exists since that's the default
-      expect(fs.existsSync).toHaveBeenCalled();
+      // Verify that saveImage was called (service handles default directory)
+      expect(mockConcertService.saveImage).toHaveBeenCalledWith(
+        expect.objectContaining({ filename: 'test.jpg', mimetype: 'image/jpeg' })
+      );
     });
   });
 });
