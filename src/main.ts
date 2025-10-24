@@ -7,6 +7,7 @@ import {
 } from '@nestjs/platform-fastify';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyMultipart from '@fastify/multipart';
+import fastifyCors from '@fastify/cors';
 import { setup } from './setup';
 
 async function bootstrap() {
@@ -15,8 +16,17 @@ async function bootstrap() {
     new FastifyAdapter({ logger: true }),
   );
 
+  app.register(fastifyCors, {
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Range', 'X-Total-Count'],
+  });
+
   app.register(fastifyHelmet, {
     contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
   });
 
   app.register(fastifyMultipart, {
