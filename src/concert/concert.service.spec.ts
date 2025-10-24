@@ -344,7 +344,7 @@ describe('ConcertService', () => {
 
   describe('delete', () => {
     it('should delete a concert', async () => {
-      const id = 1;
+      const id = '1';
       mockRepository.delete.mockResolvedValue({ affected: 1, raw: {} });
 
       await service.delete(id);
@@ -354,7 +354,7 @@ describe('ConcertService', () => {
     });
 
     it('should throw NotFoundException when concert does not exist', async () => {
-      const id = 999;
+      const id = '999';
       mockRepository.delete.mockResolvedValue({ affected: 0, raw: {} });
 
       await expect(service.delete(id)).rejects.toThrow(NotFoundException);
@@ -365,7 +365,7 @@ describe('ConcertService', () => {
     });
 
     it('should handle database errors', async () => {
-      const id = 1;
+      const id = '1';
       mockRepository.delete.mockRejectedValue(
         new Error('Delete operation failed'),
       );
@@ -376,7 +376,7 @@ describe('ConcertService', () => {
     });
 
     it('should not throw when affected count is greater than 1', async () => {
-      const id = 1;
+      const id = '1';
       // This shouldn't normally happen with proper constraints, but test the case
       mockRepository.delete.mockResolvedValue({ affected: 2, raw: {} });
 

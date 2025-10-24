@@ -43,21 +43,47 @@ export class ConcertService {
     return concert;
   }
 
-  async update(id: string, concertDto: UpdateConcertDto): Promise<Concert> {
+  async update(
+    id: string,
+    concertDto: UpdateConcertDto,
+    imageFilename?: string,
+  ): Promise<Concert> {
+    const existingConcert = await this.concertRepository.findOneBy({ id });
+    if (!existingConcert) {
+      throw new NotFoundException(`Concert with ID ${id} not found`);
+    }
+
+    const oldImage = existingConcert.image;
+
     const concert = await this.concertRepository.preload({
       id: id,
       ...concertDto,
+      ...(imageFilename !== undefined && { image: imageFilename }),
     });
     if (!concert) {
       throw new NotFoundException(`Concert with ID ${id} not found`);
     }
-    return this.concertRepository.save(concert);
+
+    const savedConcert = await this.concertRepository.save(concert);
+
+    // Delete old image if a new image was provided and it's different from the old one
+    if (imageFilename && oldImage && imageFilename !== oldImage) {
+      await this.deleteImage(oldImage);
+    }
+
+    return savedConcert;
   }
 
-  async delete(id: number): Promise<void> {
-    const result = await this.concertRepository.delete(id);
-    if (result.affected === 0) {
+  async delete(id: string): Promise<void> {
+    const concert = await this.concertRepository.findOneBy({ id });
+    if (!concert) {
       throw new NotFoundException(`Concert with ID ${id} not found`);
+    }
+
+    await this.concertRepository.delete(id);
+
+    if (concert.image) {
+      await this.deleteImage(concert.image);
     }
   }
 
@@ -101,6 +127,31 @@ export class ConcertService {
       return filename;
     } catch (error) {
       throw new Error(`Failed to save image: ${error.message}`);
+    }
+  }
+
+  async deleteImage(filename: string): Promise<void> {
+    const filePath =
+      this.configService.get<string>('FILE_DIRECTORY') ?? 'uploads';
+    const imagePath = path.join(filePath, filename);
+    try {
+      await fs.promises.unlink(imagePath);
+    } catch (error) {
+      throw new Error(`Failed to delete image: ${error.message}`);
+    }
+  }
+
+  async deleteImages(filenames: string[]): Promise<void> {
+    const filePath =
+      this.configService.get<string>('FILE_DIRECTORY') ?? 'uploads';
+    try {
+      await Promise.all(
+        filenames.map((filename) =>
+          fs.promises.unlink(path.join(filePath, filename)),
+        ),
+      );
+    } catch (error) {
+      throw new Error(`Failed to delete images: ${error.message}`);
     }
   }
 }

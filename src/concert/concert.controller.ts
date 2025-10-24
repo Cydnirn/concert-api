@@ -238,7 +238,7 @@ export class ConcertController {
   }
 
   @Delete(':id')
-  async deleteConcert(@Param('id') id: number): Promise<ResponseDto<void>> {
+  async deleteConcert(@Param('id') id: string): Promise<ResponseDto<void>> {
     try {
       await this.concertService.delete(id);
       return plainToInstance(ResponseDto<void>, {

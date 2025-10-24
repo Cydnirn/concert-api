@@ -1,5 +1,5 @@
 services:
-  app:
+  api:
     image: cyd/concert-api-app:latest
     restart: unless-stopped
     env_file: .env
@@ -14,6 +14,19 @@ services:
     volumes:
       - ./uploads:/var/uploads
 
+  app:
+    image: cyd/concert-app-ui:latest
+    restart: unless-stopped
+    depends_on:
+      - api
+    networks:
+      - app-network
+    ports:
+      - '5000:3000'
+    environment:
+      - API_ENDPOINT=${API_ENDPOINT:-http://api:3000}
+      - NODE_ENV=production
+
   db:
     image: postgres:17-alpine
     restart: always
@@ -22,8 +35,6 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-    ports:
-      - '5432:5432'
     volumes:
       - ./db-data:/var/lib/postgresql/data
     networks:
