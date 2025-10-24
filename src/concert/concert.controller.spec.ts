@@ -522,7 +522,7 @@ describe('ConcertController', () => {
 
   describe('deleteConcert', () => {
     it('should delete a concert', async () => {
-      const id = 1;
+      const id = '1';
       mockConcertService.delete.mockResolvedValue(undefined);
 
       await controller.deleteConcert(id);
@@ -532,7 +532,7 @@ describe('ConcertController', () => {
     });
 
     it('should throw HttpException when concert not found', async () => {
-      const id = 999;
+      const id = '999';
       const errorMessage = `Concert with ID ${id} not found`;
       mockConcertService.delete.mockRejectedValue(new Error(errorMessage));
 
@@ -541,7 +541,7 @@ describe('ConcertController', () => {
     });
 
     it('should not return anything on successful deletion', async () => {
-      const id = 1;
+      const id = '1';
       mockConcertService.delete.mockResolvedValue(undefined);
 
       const result = await controller.deleteConcert(id);
