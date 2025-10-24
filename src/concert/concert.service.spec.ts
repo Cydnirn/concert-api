@@ -10,7 +10,6 @@ import { ConfigService } from '@nestjs/config';
 describe('ConcertService', () => {
   let service: ConcertService;
   let repository: Repository<Concert>;
-  let configService: ConfigService;
 
   // Mock data
   const mockConcert: Concert = {
@@ -18,6 +17,10 @@ describe('ConcertService', () => {
     name: 'Summer Music Festival',
     organizer: 'Music Events Inc',
     details: 'Annual outdoor music festival',
+    price: 100,
+    venue: 'Jakarta International Stadium',
+    artist: 'Kessoku Band',
+    date: new Date('2024-02-01'),
     image: 'test-image.jpg',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
@@ -30,6 +33,10 @@ describe('ConcertService', () => {
       name: 'Winter Jazz Night',
       organizer: 'Jazz Society',
       details: 'Intimate jazz performance',
+      price: 100,
+      venue: 'Jakarta International Stadium',
+      artist: 'Kessoku Band',
+      date: new Date('2024-02-01'),
       image: 'jazz-night.jpg',
       createdAt: new Date('2024-01-02'),
       updatedAt: new Date('2024-01-02'),
@@ -66,7 +73,6 @@ describe('ConcertService', () => {
 
     service = module.get<ConcertService>(ConcertService);
     repository = module.get<Repository<Concert>>(getRepositoryToken(Concert));
-    configService = module.get<ConfigService>(ConfigService);
     // Clear all mocks before each test
     jest.clearAllMocks();
   });
@@ -81,6 +87,10 @@ describe('ConcertService', () => {
         name: 'New Concert',
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       const expectedConcert = {
@@ -107,6 +117,10 @@ describe('ConcertService', () => {
         name: 'New Concert',
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
       const imageFilename = 'random-filename.jpg';
 
@@ -135,6 +149,10 @@ describe('ConcertService', () => {
         name: 'New Concert',
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       mockRepository.create.mockReturnValue(createDto);
@@ -373,6 +391,10 @@ describe('ConcertService', () => {
         name: 'Test Concert',
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       mockRepository.create.mockReturnValue(createDto);
@@ -427,6 +449,10 @@ describe('ConcertService', () => {
         name: 'Test',
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       mockRepository.create.mockReturnValue({ ...createDto, image: null });
@@ -447,6 +473,10 @@ describe('ConcertService', () => {
         name: longName,
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       mockRepository.create.mockReturnValue(createDto);
@@ -462,6 +492,10 @@ describe('ConcertService', () => {
         name: 'Rock & Roll <> Festival\'s "Best"',
         organizer: 'Test & Co.',
         details: 'Special chars: @#$%^&*()',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       mockRepository.create.mockReturnValue(createDto);

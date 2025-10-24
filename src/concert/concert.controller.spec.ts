@@ -54,6 +54,10 @@ describe('ConcertController', () => {
     organizer: 'Music Events Inc',
     details: 'Annual outdoor music festival',
     image: 'test-image.jpg',
+    price: 1,
+    venue: 'Test Venue',
+    artist: 'Test artist',
+    date: new Date('2024-02-01'),
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
   };
@@ -66,6 +70,10 @@ describe('ConcertController', () => {
       organizer: 'Jazz Society',
       details: 'Intimate jazz performance',
       image: 'jazz-night.jpg',
+      price: 1,
+      venue: 'Test Venue',
+      artist: 'Test artist',
+      date: new Date('2024-02-01'),
       createdAt: new Date('2024-01-02'),
       updatedAt: new Date('2024-01-02'),
     },
@@ -189,6 +197,10 @@ describe('ConcertController', () => {
         name: 'New Concert',
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       mockConcertService.create.mockResolvedValue({
@@ -252,6 +264,10 @@ describe('ConcertController', () => {
         name: 'New Concert',
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       mockConcertService.create.mockResolvedValue({
@@ -381,6 +397,10 @@ describe('ConcertController', () => {
         name: 'New Concert',
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       mockConcertService.create.mockResolvedValue({
@@ -432,7 +452,10 @@ describe('ConcertController', () => {
 
       // Verify that saveImage was called (service handles directory creation)
       expect(mockConcertService.saveImage).toHaveBeenCalledWith(
-        expect.objectContaining({ filename: 'test.jpg', mimetype: 'image/jpeg' })
+        expect.objectContaining({
+          filename: 'test.jpg',
+          mimetype: 'image/jpeg',
+        }),
       );
     });
   });
@@ -557,6 +580,10 @@ describe('ConcertController', () => {
         name: 'New Concert',
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       mockConcertService.create.mockResolvedValue({
@@ -608,7 +635,10 @@ describe('ConcertController', () => {
 
       // Verify that saveImage was called (service handles config)
       expect(mockConcertService.saveImage).toHaveBeenCalledWith(
-        expect.objectContaining({ filename: 'test.jpg', mimetype: 'image/jpeg' })
+        expect.objectContaining({
+          filename: 'test.jpg',
+          mimetype: 'image/jpeg',
+        }),
       );
     });
 
@@ -621,6 +651,10 @@ describe('ConcertController', () => {
         name: 'New Concert',
         organizer: 'Test Organizer',
         details: 'Test details',
+        price: 1,
+        venue: 'Test Venue',
+        artist: 'Test artist',
+        date: new Date('2024-02-01'),
       };
 
       mockConcertService.create.mockResolvedValue({
@@ -672,7 +706,10 @@ describe('ConcertController', () => {
 
       // Verify that saveImage was called (service handles default directory)
       expect(mockConcertService.saveImage).toHaveBeenCalledWith(
-        expect.objectContaining({ filename: 'test.jpg', mimetype: 'image/jpeg' })
+        expect.objectContaining({
+          filename: 'test.jpg',
+          mimetype: 'image/jpeg',
+        }),
       );
     });
   });
