@@ -6,4 +6,5 @@ export default () => ({
   DATABASE_CLUSTER: process.env.DATABASE_CLUSTER,
   DATABASE_URI: process.env.DATABASE_URI,
   DATABASE_URL: process.env.DATABASE_URL,
+  FILE_DIRECTORY: process.env.FILE_DIRECTORY,
 });

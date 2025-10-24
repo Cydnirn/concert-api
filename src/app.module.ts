@@ -6,6 +6,7 @@ import { ConcertModule } from './concert/concert.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         synchronize: true,
       }),
     }),
+    ImagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,6 +1,6 @@
 services:
   app:
-    image: 284845684968.dkr.ecr.us-east-1.amazonaws.com/cyd/concert-api-app:latest
+    image: cyd/concert-api-app:latest
     restart: unless-stopped
     env_file: .env
     environment:
@@ -11,9 +11,11 @@ services:
       - db
     networks:
       - app-network
+    volumes:
+      - ./uploads:/var/uploads
 
   db:
-    image: postgres:12-alpine
+    image: postgres:17-alpine
     restart: always
     env_file: .env
     environment:
@@ -29,6 +31,8 @@ services:
 
 volumes:
   db-data:
+    driver: local
+  uploads:
     driver: local
 
 networks:
