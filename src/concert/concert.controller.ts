@@ -90,10 +90,31 @@ export class ConcertController {
           description: 'Concert organizer',
           example: 'Music Events Inc',
         },
+        artist: {
+          type: 'string',
+          description: 'Concert artist',
+          example: 'John Doe',
+        },
+        venue: {
+          type: 'string',
+          description: 'Concert venue',
+          example: 'Stadium',
+        },
         details: {
           type: 'string',
           description: 'Concert details',
           example: 'Annual outdoor music festival',
+        },
+        price: {
+          type: 'number',
+          description: 'Concert price',
+          example: 50,
+        },
+        date: {
+          type: 'string',
+          format: 'date',
+          description: 'Concert date',
+          example: '2023-07-15',
         },
         image: {
           type: 'string',
@@ -126,6 +147,10 @@ export class ConcertController {
       let details = '';
       let filename = '';
       let organizer = '';
+      let venue = '';
+      let artist = '';
+      let price = 0;
+      let date = new Date();
 
       // Process multipart data
       const parts = req.parts();
@@ -145,6 +170,14 @@ export class ConcertController {
             details = part.value as string;
           } else if (part.fieldname === 'organizer') {
             organizer = part.value as string;
+          } else if (part.fieldname === 'venue') {
+            venue = part.value as string;
+          } else if (part.fieldname === 'date') {
+            date = new Date(part.value as string);
+          } else if (part.fieldname === 'price') {
+            price = parseInt(part.value as string);
+          } else if (part.fieldname === 'artist') {
+            artist = part.value as string;
           }
         }
       }
@@ -154,6 +187,10 @@ export class ConcertController {
         name,
         details,
         organizer,
+        venue,
+        date,
+        price,
+        artist,
       };
 
       const concert = await this.concertService.create(
